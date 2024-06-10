@@ -31,13 +31,13 @@ namespace WY_compiler
             }
             else if (pid == 0)
             {
-                int _stderr = open(PathUtil::Stderr(file_name).c_str(), O_CREAT | O_WRONLY, 0644);
-                if(_stderr < 0)
+                int Compile_error = open(PathUtil::Compile_error(file_name).c_str(), O_CREAT | O_WRONLY, 0644);
+                if(Compile_error < 0)
                 {
-                    LOG(Warnning) << "没有成功形成stderr文件\n";
+                    LOG(Warnning) << "没有成功形成Compile_error文件\n";
                     exit(1);
                 }
-                dup2(_stderr, 2);
+                dup2(Compile_error, 2);
 
                 execlp("g++", "g++", "-o", PathUtil::Exc(file_name).c_str(), PathUtil::Src(file_name).c_str(), "-std=c++11", nullptr);
                 LOG(Error) << "execlp程序替换失败,可能是参数错误\n";

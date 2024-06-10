@@ -1,4 +1,0 @@
-./tmp/code.cpp: In function ‘int main()’:
-./tmp/code.cpp:5:5: error: ‘asd’ was not declared in this scope
-    5 |     asd
-      |     ^~~
