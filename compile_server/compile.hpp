@@ -10,7 +10,7 @@
 #include "../comm/util.hpp"
 #include "../comm/log.hpp"
 
-namespace WY_compiler
+namespace WY_compile
 {
     using namespace WY_util;
     using namespace WY_log;

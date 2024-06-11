@@ -6,6 +6,8 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include "../comm/util.hpp"
 #include "../comm/log.hpp"
 namespace WY_run
@@ -14,8 +16,21 @@ namespace WY_run
     using namespace WY_log;
     class Runer
     {
+        static void Sourcelimit(int _rlimit_cpu, int _rlimit_mem)
+        {
+            struct rlimit rlimit_cpu;
+            rlimit_cpu.rlim_max = RLIM_INFINITY;
+            rlimit_cpu.rlim_cur = _rlimit_cpu;
+            setrlimit(RLIMIT_CPU, &rlimit_cpu);
+
+            struct rlimit rlimit_mem;
+            rlimit_mem.rlim_max = RLIM_INFINITY;
+            rlimit_mem.rlim_cur = _rlimit_mem * 1024; // 转化为kb
+            setrlimit(RLIMIT_AS, &rlimit_mem);
+
+        }
     public:
-        static int Run(const std::string &file_name)
+        static int Run(const std::string &file_name, int rlimit_cpu/*程序最大执行时间*/, int rlimit_mem /*KB*/)
         {
             int statue = 0;
 
@@ -43,6 +58,7 @@ namespace WY_run
                 dup2(_stdout, 1);
                 dup2(_stderr, 2);
 
+                Runer::Sourcelimit(rlimit_cpu, rlimit_mem);
                 execl(PathUtil::Exc(file_name).c_str(), PathUtil::Exc(file_name).c_str(), nullptr);
                 exit(1);
             }

@@ -1,12 +1,8 @@
-#include "compile.hpp"
-#include "runner.hpp"
+#include "compile_run.hpp"
+using namespace WY_compile_run;
 
-using namespace WY_compiler;
-using namespace WY_run;
 int main()
 {
-    std::string file_name = "code";
-    Compiler::Compile(file_name);
-    Runer::Run(file_name);
+
     return 0;
 }
