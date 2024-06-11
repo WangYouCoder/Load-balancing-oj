@@ -24,6 +24,7 @@ namespace WY_util
             return path_name;
         }
 
+        // 编译
         static std::string Src(const std::string &file_name)
         {
             return AddSuffix(file_name, ".cpp");
@@ -32,6 +33,21 @@ namespace WY_util
         static std::string Exc(const std::string &file_name)
         {
             return AddSuffix(file_name, ".exe");
+        }
+
+        static std::string Compile_error(const std::string &file_name)
+        {
+            return AddSuffix(file_name, ".compile_error");
+        }
+
+        static std::string Stdin(const std::string &file_name)
+        {
+            return AddSuffix(file_name, ".stdin");
+        }
+
+        static std::string Stdout(const std::string &file_name)
+        {
+            return AddSuffix(file_name, ".Stdout");
         }
 
         static std::string Stderr(const std::string &file_name)
@@ -52,6 +68,21 @@ namespace WY_util
                 return true;
             }
             return false;
+        }
+
+        static std::string UniFileName()
+        {
+            return "";
+        }
+
+        static bool WriteFile(const std::string &file_name, const std::string code)
+        {
+
+        }
+
+        static bool ReadFile(const std::string &file_name, std::string *out, bool keep = false)
+        {
+            
         }
     };
 
