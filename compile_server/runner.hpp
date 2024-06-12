@@ -69,7 +69,7 @@ namespace WY_run
                 close(_stderr);
                 // statue & 0x7f
                 waitpid(pid, &statue, 0);
-                LOG(Info) << "程序执行的退出信息: " << (statue & 0x7f) << "\n";
+                LOG(Info) << " 程序执行的退出信息: " << (statue & 0x7f) << "\n";
                 return statue & 0x7f;
             }
         }
