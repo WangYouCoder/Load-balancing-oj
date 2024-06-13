@@ -6,7 +6,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/time.h>
-
+#include <atomic>
+#include <fstream>
 namespace WY_util
 {
     class PathUtil
@@ -56,6 +57,24 @@ namespace WY_util
         }
     };
 
+    class TimeUtil
+    {
+    public:
+        static std::string GetTimeStamp()
+        {
+            struct timeval tv;
+            gettimeofday(&tv, nullptr);
+            return std::to_string(tv.tv_sec);
+        }
+
+        static std::string GetTimeMs()
+        {
+            struct timeval tv;
+            gettimeofday(&tv, nullptr);
+            return std::to_string(tv.tv_usec * 1000 + tv.tv_sec / 1000);
+        }
+    };
+
     class FileUtil
     {
     public:
@@ -71,29 +90,49 @@ namespace WY_util
         }
 
         static std::string UniFileName()
-        {
-            return "";
+        {   
+            static std::atomic_uint id(0);
+            id++;
+            std::string ms = TimeUtil::GetTimeMs();
+            std::string file_name = ms + "_" + std::to_string(id);
+
+            return file_name;
         }
 
-        static bool WriteFile(const std::string &file_name, const std::string code)
+        static bool WriteFile(const std::string &file_name, const std::string &code)
         {
+            std::ofstream out(file_name);
+            if(!out.is_open())
+            {
+                return false;
+            }
 
+            out.write(code.c_str(), code.size());
+            out.close();
+            return true;
         }
 
         static bool ReadFile(const std::string &file_name, std::string *out, bool keep = false)
         {
-            
+            (*out).clear();
+
+            std::ifstream in(file_name);
+            if(!in.is_open())
+            {
+                return false;
+            }
+
+            std::string line;
+            while(getline(in, line))
+            {
+                (*out) += line;
+                (*out) += (keep ? "\n" : "");
+            }
+
+            in.close();
+            return true;
         }
     };
 
-    class TimeUtil
-    {
-    public:
-        static std::string GetTimeStamp()
-        {
-            struct timeval tv;
-            gettimeofday(&tv, nullptr);
-            return std::to_string(tv.tv_sec);
-        }
-    };
+    
 }
