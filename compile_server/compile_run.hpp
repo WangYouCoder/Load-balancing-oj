@@ -14,11 +14,29 @@ namespace WY_compile_run
     using namespace WY_run;
     class CompileRun
     {
+        static std::string toString(const Json::Value &val)
+        {
+            static Json::Value def = []()
+            {
+                Json::Value def;
+                Json::StreamWriterBuilder::setDefaults(&def);
+                def["emitUTF8"] = true;
+                return def;
+            }();
+
+            std::ostringstream stream;
+            Json::StreamWriterBuilder stream_builder;
+            stream_builder.settings_ = def; // Config emitUTF8
+            std::unique_ptr<Json::StreamWriter> writer(stream_builder.newStreamWriter());
+            writer->write(val, &stream);
+            return stream.str();
+        }
+
     public:
         static std::string StaToRea(int code, const std::string &file_name)
         {
             std::string dst;
-            switch(code)
+            switch (code)
             {
             case 0:
                 dst = "程序编译运行成功";
@@ -53,15 +71,16 @@ namespace WY_compile_run
 
             std::string code = ret["code"].asString();
             std::string input = ret["input"].asString();
-              int _rlimit_cpu = ret["cpu_limit"].asInt();
+            int _rlimit_cpu = ret["cpu_limit"].asInt();
             int _rlimit_mem = ret["mem_limit"].asInt();
 
             int status_code = 0;
-            std::string file_name;
-            Json::Value out_value;
             int result_code = 0;
+            std::string file_name;
 
-            if(code.size() == 0)
+            Json::Value out_value;
+
+            if (code.size() == 0)
             {
                 status_code = -1; // 提交的代码为空
                 goto END;
@@ -69,24 +88,24 @@ namespace WY_compile_run
 
             file_name = FileUtil::UniFileName();
 
-            if(!FileUtil::WriteFile(PathUtil::Src(file_name), code))
+            if (!FileUtil::WriteFile(PathUtil::Src(file_name), code))
             {
                 status_code = -2; // 写入文件失败
                 goto END;
             }
 
-            if(!Compiler::Compile(file_name))
+            if (!Compiler::Compile(file_name))
             {
                 status_code = -3; // 编译失败
                 goto END;
             }
 
             result_code = Runer::Run(file_name, _rlimit_cpu, _rlimit_mem);
-            if(result_code == 0)
+            if (result_code == 0)
             {
                 // 编译运行成功
             }
-            else if(result_code < 0)
+            else if (result_code < 0)
             {
                 // 未知错误
                 status_code = result_code;
@@ -95,26 +114,26 @@ namespace WY_compile_run
             {
                 // 信号量
                 status_code = result_code;
-
             }
         END:
             out_value["status"] = status_code;
             out_value["reason"] = StaToRea(status_code, file_name);
 
-            if(status_code == 0)
+            if (status_code == 0)
             {
                 std::string _stdout;
                 FileUtil::ReadFile(PathUtil::Stdout(file_name), &_stdout, true);
                 out_value["stdout"] = _stdout;
+
                 std::string _stderr;
                 FileUtil::ReadFile(PathUtil::Stderr(file_name), &_stderr, true);
                 out_value["stderr"] = _stderr;
-            }   
+            }
 
-            Json::StyledWriter write;
-            *out = write.write(out_value);
+            // Json::StyledWriter write;
+            // *out = write.write(out_value);
 
-            std::cout << *out << std::endl << std::endl;;
+            *out = toString(out_value);
         }
     };
 }
