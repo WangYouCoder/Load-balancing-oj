@@ -14,6 +14,27 @@ namespace WY_compile_run
     using namespace WY_run;
     class CompileRun
     {
+        static void RemoveTempFile(const std::string &file_name)
+        {
+            if (FileUtil::IsFileExist(PathUtil::Exc(file_name)))
+                unlink(PathUtil::Exc(file_name).c_str());
+                
+            if (FileUtil::IsFileExist(PathUtil::Compile_error(file_name)))
+                unlink(PathUtil::Compile_error(file_name).c_str());
+
+            if (FileUtil::IsFileExist(PathUtil::Src(file_name)))
+                unlink(PathUtil::Src(file_name).c_str());
+
+            if (FileUtil::IsFileExist(PathUtil::Stderr(file_name)))
+                unlink(PathUtil::Stderr(file_name).c_str());
+
+            if (FileUtil::IsFileExist(PathUtil::Stdin(file_name)))
+                unlink(PathUtil::Stdin(file_name).c_str());
+
+            if (FileUtil::IsFileExist(PathUtil::Stdout(file_name)))
+                unlink(PathUtil::Stdout(file_name).c_str());
+        }
+
         static std::string toString(const Json::Value &val)
         {
             static Json::Value def = []()
@@ -134,6 +155,8 @@ namespace WY_compile_run
             // *out = write.write(out_value);
 
             *out = toString(out_value);
+
+            RemoveTempFile(file_name);
         }
     };
 }
