@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <atomic>
 #include <fstream>
+#include <boost/algorithm/string.hpp>
 namespace WY_util
 {
     class PathUtil
@@ -82,7 +83,7 @@ namespace WY_util
         {
             // stat: 获得指定目录文件的属性，如果获取成功返回0，失败返回1
             struct stat st;
-            if(stat(path_name.c_str(), &st) == 0)
+            if (stat(path_name.c_str(), &st) == 0)
             {
                 return true;
             }
@@ -90,7 +91,7 @@ namespace WY_util
         }
 
         static std::string UniFileName()
-        {   
+        {
             static std::atomic_uint id(0);
             id++;
             std::string ms = TimeUtil::GetTimeMs();
@@ -102,7 +103,7 @@ namespace WY_util
         static bool WriteFile(const std::string &file_name, const std::string &code)
         {
             std::ofstream out(file_name);
-            if(!out.is_open())
+            if (!out.is_open())
             {
                 return false;
             }
@@ -117,13 +118,13 @@ namespace WY_util
             (*out).clear();
 
             std::ifstream in(file_name);
-            if(!in.is_open())
+            if (!in.is_open())
             {
                 return false;
             }
 
             std::string line;
-            while(getline(in, line))
+            while (getline(in, line))
             {
                 (*out) += line;
                 (*out) += (keep ? "\n" : "");
@@ -134,5 +135,13 @@ namespace WY_util
         }
     };
 
-    
+    class SplitUtil
+    {
+    public:
+        static bool Split(std::string str, std::string seq, std::vector<std::string> *out)
+        {
+            boost::split((*out), str, boost::is_any_of(seq), boost::algorithm::token_compress_on);
+            return true;
+        }
+    };
 }
