@@ -54,5 +54,76 @@
         补充:
             1.getline不保存分隔符
             2.《atomic》 -> atomic_uint id(0)
-            3. 
+            3. 清理临时文件: 由于异常情况的发生，有些临时文件是有可能不会发生的。unlink -> 删除文件的系统调用
+    d.引入httplib第三方库 ----- > 阻塞式的多线程库
+        在设置响应时，是需要传入set_content文本类型的，json对应的文本类型是: application/json;charset=utf-8
+
 三. oj_server
+    1.基于MAV结构进行设计
+        M: Model，通常是和数据交互的模块，比如，对题库进行增删查改(文件版，MySQL)
+        V: View，通常是拿到数据后，要进行构建网页，渲染网页的内容，展示给用户的(浏览器)
+        C: Control，控制器，就是我们核心的业务逻辑
+    2.oj_server: 
+        用户请求的路由功能，分为三部分:
+            1.获取题目列表: 
+            2.用户根据题目编号，获取题目的内容
+                获取url中的数字部分 --- > 在Request中有一个matches字段，通过matches[1] 可以获取数字
+            3.用户提交的代码，使用我们的判题功能(a.每道题的测试用例 b.compile_run)
+                设置目录 --- > set_base_dir("你的默认目录")
+    3.文件版题目设计 --- model模块
+        a.题目的编号
+        b.题目的难度
+        c.题目的标题
+        d.题目的描述
+        e.时、空复杂度
+        由两批文件构成:
+            1.题目列表(不需要题目的内容) : [ 题目的编号  目的标题  题目的难度  题目所在路径  题目时间限制  题目空间限制 ]
+            2.题目的描述，题目的预设值代码(编写代码的地方)，测试用例代码
+
+        *** 思考: 我们是仿照leetcode的形式进行设计的，在leetcode上，基本上都是只实现某一个函数或成员函数，并不是一个完整的工程代码。而同时我们还需要设计测试用例来判断用户写的代码是否正确，因此我们向compile_run模块传输的数据应该是用户写的代码 + 我们设计的测试用例。(多个.hpp文件一起编译时，是会整合到一起进行编译链接的，因此我们是可以将用户写的代码和我们设计的测试用例代码分开写到两个.hpp文件当中的) 
+
+        1. oj_model: 根据题目list文件，加载所有的题目信息到内存中。 主要用来和数据进行交互，对外提供访问数据的接口
+            a.加载题目信息
+            b.得到全部题目信息
+            c.得到指定题目信息
+        
+        control模块: 用来管理model模块和view模块的，是将model模块获取的数据通过view模块进行网页渲染
+            a.得到所有题目数据 --- 再通过view模块进行渲染
+            b.得到指定题目数据
+
+        view模块:
+            内置两个成员函数: a. AllExpandHtml  b. OneExpandHtml
+
+
+
+Thread-lib:
+    boost/algorithm/string.hpp --- > boost::split() 
+        参数列表解释: vector数组(将拆分后的一个一个字符存放到vector中), 被分隔字符串, 分隔符(is_any_of(分隔符)), boost::algorithm::token_compress_on(去除多余的分隔符 --- > 两个字符间有多个连续的分隔符) ---------------- boost::algorithm::token_compress_off 去掉分隔符压缩
+    
+    ctemplate --- > C/C++的网页渲染工具
+    eg:
+        #include <ctemplate/template.h>
+        #include <iostream>
+        #include <string>
+
+        int main()
+        {
+            std::string in_html = "./test.html";
+            std::string value = "hello word";
+
+            // 形成数据字典
+            ctemplate::TemplateDictionary root("test"); // 类比成 unordered_map<> test
+            root.SetValue("key", value);                // test.insert({"key", value})
+
+            // 获取被渲染对象
+            ctemplate::Template *tpl = ctemplate::Template::GetTemplate(in_html, ctemplate::DO_NOT_STRIP/*保持原貌, 不去除空行*/);
+
+            // 添加数据字典到网页中
+            std::string out_html;
+            tpl->Expand(&out_html, &root);
+
+            // 完成渲染
+            std::cout << out_html << std::endl;
+            return 0;
+        }
+    
