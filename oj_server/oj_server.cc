@@ -1,19 +1,23 @@
 #include <iostream>
 #include "../comm/httplib.h"
-
+#include "oj_control.hpp"
 using namespace httplib;
-
+using namespace WY_control;
 int main()
 {
     Server svr;
-
-    svr.Get("/all_question",[](const Request &req, Response &resp){
-        resp.set_content("这是所有的题目列表", "text/plai;charset=utf-8");
+    Control cont;
+    svr.Get("/all_questions",[&cont](const Request &req, Response &resp){
+        std::string html;
+        cont.AllQuestion(&html);
+        resp.set_content(html, "text/html;charset=utf-8");
     });
 
-    svr.Get(R"(/question/(\d+))",[](const Request &req, Response &resp){
-        std::string numble = req.matches[1];
-        resp.set_content("这是指定的一道题" + numble, "text/plai;charset=utf-8");
+    svr.Get(R"(/question/(\d+))",[&cont](const Request &req, Response &resp){
+        std::string number = req.matches[1];
+        std::string html;
+        cont.OneQuestgion(number, &html);
+        resp.set_content(html, "text/html;charset=utf-8");
     });
 
     svr.Get(R"(/judge(\d+))",[](const Request &req, Response &resp){

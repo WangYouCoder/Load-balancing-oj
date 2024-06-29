@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线oj_题目列表</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>编号</th>
+            <th>标题</th>
+            <th>难度</th>
+        </tr>
+        {{#question_list}}
+        <tr>
+            <th>{{number}}</th>
+            <th><a href="/question/{{number}}">{{title}}</a></th>
+            <th>{{star}}</th>
+        </tr>
+        {{/question_list}}
+    </table>
+</body>
+</html>

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -58,7 +60,7 @@ namespace WY_model
 
                 Question q;
                 q.number = v[0];
-                q.tail = v[1];
+                q.title = v[1];
                 q.star = v[2];
                 q.cpu_limit = atoi(v[3].c_str());
                 q.mem_limit = atoi(v[4].c_str());
@@ -70,6 +72,7 @@ namespace WY_model
 
                 questions.insert({q.number, q});
             }
+            
             LOG(Info) << " 加载题库成功...\n";
             in.close();
             return true;
@@ -104,4 +107,4 @@ namespace WY_model
         {
         }
     };
-}
+};

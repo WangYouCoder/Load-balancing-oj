@@ -14,7 +14,7 @@ void Test1()
     }
     else
     {
-        cout << "为通过测试用例一" <<endl;
+        cout << "未通过测试用例一" <<endl;
     }
 }
 
@@ -30,7 +30,7 @@ void Test2()
     }
     else
     {
-        cout << "为通过测试用例一" <<endl;
+        cout << "未通过测试用例一" <<endl;
     }
 }
 
