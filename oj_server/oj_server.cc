@@ -20,9 +20,12 @@ int main()
         resp.set_content(html, "text/html;charset=utf-8");
     });
 
-    svr.Get(R"(/judge(\d+))",[](const Request &req, Response &resp){
-        std::string numble = req.matches[1];
-        resp.set_content("这是指定一道题的判题" + numble, "text/plai;charset=utf-8");
+    svr.Post(R"(/judge(\d+))",[&cont](const Request &req, Response &resp){
+        std::string number = req.matches[1];
+        std::string in_json = req.body;
+        std::string out_json;
+        cont.Judge(number, in_json, &out_json);
+        resp.set_content(out_json, "application/json;charset=utf-8");
     });
     svr.set_base_dir("./wwwroot");
 

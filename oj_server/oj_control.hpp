@@ -133,7 +133,7 @@ namespace WY_control
                 if(*iter == which)
                 {
                     online.erase(iter);
-                    offline.push_back(*iter);
+                    offline.push_back(which);
                 }
             }
             mtx.unlock();
@@ -204,7 +204,7 @@ namespace WY_control
             return ret;
         }
 
-        bool Judge(std::string number, std::string in_json, std::string *out_json)
+        void Judge(std::string number, std::string in_json, std::string *out_json)
         {
             // 1. 获取题目信息
             Question q;
@@ -235,7 +235,7 @@ namespace WY_control
                 LOG(Info) << " 选择主机成功， 主机id: " << id <<" 主机ip: "<< m->ip <<  " 主机port: " << m->port << "\n";
                 
                 // 6. 发起http请求
-                Client cli(m->ip, m->port);
+                httplib::Client cli(m->ip, m->port);
                 m->IncLoad();
                 if(auto res = cli.Post("compile_run", compile_and_run, "application/json;charset=utf-8"))
                 {
@@ -245,7 +245,7 @@ namespace WY_control
                         m->DecLoad();
                         LOG(Info) << "编译运行成功\n";
                         break;
-                    }
+                    } 
                 }
                 else
                 {
