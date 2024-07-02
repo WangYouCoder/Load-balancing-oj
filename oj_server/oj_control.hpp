@@ -134,6 +134,7 @@ namespace WY_control
                 {
                     online.erase(iter);
                     offline.push_back(which);
+                    break;
                 }
             }
             mtx.unlock();
@@ -204,7 +205,7 @@ namespace WY_control
             return ret;
         }
 
-        void Judge(std::string number, std::string in_json, std::string *out_json)
+        void Judge(const std::string &number, const std::string &in_json, std::string *out_json)
         {
             // 1. 获取题目信息
             Question q;
@@ -215,14 +216,14 @@ namespace WY_control
             reader.parse(in_json, in_value);
             std::string code = in_value["code"].asString();
             // 3. 将从客户端得到的代码与测试用例进行组合
-            Json::Value compile_run;
-            compile_run["input"] = in_value["input"].asString();
-            compile_run["code"] = code + q.tail;
-            compile_run["cpu_limit"] = q.cpu_limit;
-            compile_run["mem_limit"] = q.mem_limit;
+            Json::Value compile_value;
+            compile_value["input"] = in_value["input"].asString();
+            compile_value["code"] = code + q.tail;
+            compile_value["cpu_limit"] = q.cpu_limit;
+            compile_value["mem_limit"] = q.mem_limit;
             // 4. 进行序列化，转为字符串
             Json::FastWriter writer;
-            std::string compile_and_run = writer.write(compile_run);
+            std::string compile_string = writer.write(compile_value);
             // 5. 挑选服务器
             while(true)
             {
@@ -237,7 +238,7 @@ namespace WY_control
                 // 6. 发起http请求
                 httplib::Client cli(m->ip, m->port);
                 m->IncLoad();
-                if(auto res = cli.Post("compile_run", compile_and_run, "application/json;charset=utf-8"))
+                if(auto res = cli.Post("/compile_run", compile_string, "application/json;charset=utf-8"))
                 {
                     if(res->status == 200)
                     {
@@ -251,6 +252,7 @@ namespace WY_control
                 {
                     LOG(Error) << " 请求资源失败, 主机id: " << id <<" 主机ip: "<< m->ip <<  " 主机port: " << m->port << "\n";
                     _load_blance.OfflineMachine(id);
+                    _load_blance.ShowMachines();
                 }
                 m->DecLoad();
             }

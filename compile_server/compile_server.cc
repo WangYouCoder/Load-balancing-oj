@@ -11,7 +11,7 @@ void Usage(std::string proc)
 
 int main(int argc, char *argv[])
 {
-    if(argc != 0)
+    if(argc != 2)
     {
         Usage(argv[0]);
         return -1;
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
                  }
              });
 
-    svr.listen("0.0.0.0", 8080);
+    svr.listen("0.0.0.0", atoi(argv[1]));
 
     // std::string in_json;
 

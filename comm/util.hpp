@@ -49,7 +49,7 @@ namespace WY_util
 
         static std::string Stdout(const std::string &file_name)
         {
-            return AddSuffix(file_name, ".Stdout");
+            return AddSuffix(file_name, ".stdout");
         }
 
         static std::string Stderr(const std::string &file_name)

@@ -6,9 +6,9 @@ void Test1()
 {
     vector<int> v{2,7,11,15};
 
-    auto ret = Solution().twoSum(v, 9);
+    auto ret = Solution().twoSum(v);
 
-    if(ret.size() == 2 && ret[0] == 0 && ret[1] == 1)
+    if(ret == 15)
     {
         cout << "通过测试用例一" <<endl;
     }
@@ -22,9 +22,9 @@ void Test2()
 {
     vector<int> v{3,2,4};
 
-    auto ret = Solution().twoSum(v, 6);
+    auto ret = Solution().twoSum(v);
 
-    if(ret.size() == 2 && ret[0] == 1 && ret[1] == 2)
+    if(ret == 4)
     {
         cout << "通过测试用例一" <<endl;
     }
@@ -38,6 +38,6 @@ int main()
 {
     Test1();
     Test2();
-
+    cout << " AAAAAAAAAAAAAAA " << endl;
     return 0;
 }

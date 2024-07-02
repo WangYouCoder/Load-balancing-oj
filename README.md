@@ -90,9 +90,27 @@
         control模块: 用来管理model模块和view模块的，是将model模块获取的数据通过view模块进行网页渲染
             a.得到所有题目数据 --- 再通过view模块进行渲染
             b.得到指定题目数据
+            c.负载均衡模块:
+                管理主机信息，使用合适的算法挑选主机
 
         view模块:
             内置两个成员函数: a. AllExpandHtml  b. OneExpandHtml
+
+            https://www.w3cschool.cn/html/html-intro.html --- > html使用手册
+
+        Judge:
+            1. in_json进行反序列化，得到题目的id，code，input
+            2. 重新拼接用户代码+测试用例代码，形成新的代码
+            3. 选择负载最低的主机，然后发起http请求，得到结果
+            4. 将结果赋值给out_json
+
+
+
+
+
+
+
+
 
 
 

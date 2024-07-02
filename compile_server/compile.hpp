@@ -39,7 +39,7 @@ namespace WY_compile
                 }
                 dup2(Compile_error, 2);
 
-                execlp("g++", "g++", "-o", PathUtil::Exc(file_name).c_str(), PathUtil::Src(file_name).c_str(), "-std=c++11", nullptr);
+                execlp("g++", "g++", "-o", PathUtil::Exc(file_name).c_str(), "-D", "COMPILE", PathUtil::Src(file_name).c_str(), "-std=c++11", nullptr);
                 LOG(Error) << "execlp程序替换失败,可能是参数错误\n";
                 exit(2);
             }
