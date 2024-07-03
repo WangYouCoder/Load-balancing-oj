@@ -41,10 +41,17 @@ namespace WY_control
 
         int Load()
         {
-             int l = load;
             if(mtx) mtx->lock();
+             int l = load;
             if(mtx) mtx->unlock();
             return l;
+        }
+
+        void ResetLoad()
+        {
+            if(mtx) mtx->lock();
+            load = 0;
+            if(mtx) mtx->unlock();
         }
     };
 
@@ -107,6 +114,7 @@ namespace WY_control
             {
                 mtx.unlock();
                 LOG(Fatal) << " 所有的后端主机都已离线, error error error ! ! !\n";
+                return false;
             }
 
             *id = online[0];
@@ -132,17 +140,24 @@ namespace WY_control
             {
                 if(*iter == which)
                 {
+                    machines[which].ResetLoad();
                     online.erase(iter);
                     offline.push_back(which);
                     break;
                 }
             }
+
             mtx.unlock();
         }
 
         void OnlineMachine()
         {
+            mtx.lock();
+            online.insert(online.end(), offline.begin(), offline.end());
+            offline.erase(offline.begin(), offline.end());
+            mtx.unlock();
 
+            LOG(Info) << "所有的主机已经上线了\n";
         }
 
         void ShowMachines()
@@ -173,12 +188,20 @@ namespace WY_control
         View _view;
         LoadBlance _load_blance;
     public:
+        void RecoveryMachine()
+        {
+            _load_blance.OnlineMachine();
+        }
+
         bool AllQuestion(std::string *html)
         {
             bool ret = true;
             std::vector<Question> v;
             if(_model.GetAllQuestion(&v))
             {
+                sort(v.begin(), v.end(), [](const Question &q1, const Question &q2){
+                    return atoi(q1.number.c_str()) < atoi(q2.number.c_str());
+                });
                 _view.AllExpandHtml(v, html);
             }
             else
@@ -233,11 +256,13 @@ namespace WY_control
                 {
                     break;
                 }
-                LOG(Info) << " 选择主机成功， 主机id: " << id <<" 主机ip: "<< m->ip <<  " 主机port: " << m->port << "\n";
                 
                 // 6. 发起http请求
                 httplib::Client cli(m->ip, m->port);
                 m->IncLoad();
+
+                LOG(Info) << " 选择主机成功， 主机id: " << id <<"  主机ip: "<< m->ip <<  "  主机port: " << m->port << "  当前主机的负载是: " << m->Load() <<  "\n";
+
                 if(auto res = cli.Post("/compile_run", compile_string, "application/json;charset=utf-8"))
                 {
                     if(res->status == 200)
@@ -250,7 +275,7 @@ namespace WY_control
                 }
                 else
                 {
-                    LOG(Error) << " 请求资源失败, 主机id: " << id <<" 主机ip: "<< m->ip <<  " 主机port: " << m->port << "\n";
+                    LOG(Error) << " 请求资源失败, 主机id: " << id <<" 主机ip: "<< m->ip <<  " 主机port: " << m->port << "当前主机可能已经离线" << "\n";
                     _load_blance.OfflineMachine(id);
                     _load_blance.ShowMachines();
                 }

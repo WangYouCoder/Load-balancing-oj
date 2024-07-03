@@ -33,11 +33,11 @@ namespace WY_run
         static int Run(const std::string &file_name, int rlimit_cpu/*程序最大执行时间*/, int rlimit_mem /*KB*/)
         {
             int statue = 0;
-
+            umask(0);
             int _stdin = open(PathUtil::Stdin(file_name).c_str(), O_CREAT | O_WRONLY, 0644);
             int _stdout = open(PathUtil::Stdout(file_name).c_str(), O_CREAT | O_WRONLY, 0644);
             int _stderr = open(PathUtil::Stderr(file_name).c_str(), O_CREAT | O_WRONLY, 0644);
-            if((_stdin < 0) | (_stdout < 0) | (_stderr < 0))
+            if((_stdin < 0) || (_stdout < 0) || (_stderr < 0))
             {
                 LOG(Error) << "运行时打开文件失败\n";
                 return -1;
@@ -58,8 +58,8 @@ namespace WY_run
                 dup2(_stdout, 1);
                 dup2(_stderr, 2);
 
-                Runer::Sourcelimit(rlimit_cpu, rlimit_mem);
-                execl(PathUtil::Exc(file_name).c_str(), PathUtil::Exc(file_name).c_str(), nullptr);
+                //Runer::Sourcelimit(rlimit_cpu, rlimit_mem);
+                execlp(PathUtil::Exc(file_name).c_str(), PathUtil::Exc(file_name).c_str(), nullptr);
                 exit(1);
             }
             else

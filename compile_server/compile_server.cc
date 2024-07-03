@@ -40,7 +40,6 @@ int main(int argc, char *argv[])
     //                         int main()
     //                         {
     //                             std::cout << "hello" << std::endl;
-    //                             while(1);
     //                             return 0;
     //                         })";
     // in_value["input"] = "";

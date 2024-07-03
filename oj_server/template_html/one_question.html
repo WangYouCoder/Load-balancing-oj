@@ -9,8 +9,8 @@
         charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ext-language_tools.js" type="text/javascript"
         charset="utf-8"></script>
-        <!-- 引入jquery CDN  -->
-        <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <!-- 引入jquery CDN  -->
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
     <style>
         * {
             /* 消除网页默认的外边距 */
@@ -59,67 +59,77 @@
             float: right;
         }
 
-        .container .part1{
+        .container .part1 {
             width: 100%;
             height: 550px;
             overflow: hidden;
         }
 
-        .container .part1 .left_desc{
+        .container .part1 .left_desc {
             width: 50%;
             height: 550px;
-            float:left;
+            float: left;
             overflow: scroll;
         }
 
-        .container .part1 .left_desc h3{
+        .container .part1 .left_desc h3 {
             padding-top: 10px;
             padding-left: 10px;
         }
 
-        .container .part1 .left_desc pre{
+        .container .part1 .left_desc pre {
             padding-top: 10px;
             padding-left: 10px;
-            font-size:medium;
-            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-size: medium;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         }
 
-        .container .part1 .right_code{
+        .container .part1 .right_code {
             width: 50%;
-            float:right;
+            float: right;
         }
 
-        .container .part1 .right_code .ace_editor{
+        .container .part1 .right_code .ace_editor {
             height: 550px;
         }
 
-        .container .part2{
+        .container .part2 {
             width: 100%;
             overflow: hidden;
         }
 
-        .container .part2 .result{
+        .container .part2 .result {
             width: 100px;
-            float:left;
+            float: left;
         }
 
-        .container .part2 .bt{
+        .container .part2 .bt {
             width: 120px;
             height: 50px;
             font-size: large;
-            float:right;
-            background-color:#26bb9c;
+            float: right;
+            background-color: #26bb9c;
             color: #fff;
             /* 给按钮带上圆角 */
             /* border-radius: 1ch; */
-            border:0px;
+            border: 0px;
             margin-top: 10px;
             margin-right: 10px;
-        } 
+        }
 
-        .container .part2 .bt:hover{
+        .container .part2 .bt:hover {
             color: green;
         }
+
+        .container .part2 .result{
+            margin-top: 15px;
+            margin-left: 15px;
+        }
+
+        .container .part2 .result pre{
+            font-size: large;
+        }
+
 
     </style>
 </head>
@@ -147,7 +157,7 @@
         </div>
 
         <div class="part2">
-            <div class="result">结果</div>
+            <div class="result"></div>
             <button class="bt" onclick="submit()">提交</button>
         </div>
     </div>
@@ -172,11 +182,10 @@
         // 启用提示菜单
         ace.require("ace/ext/language_tools");
         editor.setOptions({ enableBasicAutocompletion: true, enableSnippets: true, enableLiveAutocompletion: true })
-        function submit()
-        {
+        function submit() {
             // 1. 收集当前页面的有关数据, a.题号  b.代码
             var code = editor.getSession().getValue();
-            console.log(code); 
+            console.log(code);
             var number = $(".container .part1 .left_desc h3 #number").text();
             console.log(number);
             var judge_url = "/judge/" + number;
@@ -189,16 +198,56 @@
                 dataType: 'json',  // 告知server, 我需要什么格式
                 contentType: 'application/json;charset=utf-8',   // 告知server, 我给你的是什么格式
                 data: JSON.stringify({
-                    'code' : code, 
+                    'code': code,
                     'input': ''
                 }),
-                success: function(data){
+                success: function (data) {
                     // 成功得到结果，默认写到data中
-                    console.log(data);
+                    // console.log(data);
+                    show_result(data);
                 }
             });
 
             // 3. 得到结果, 解析并显示到 result 中
+            function show_result(data) {
+                // console.log(data.status);
+                // console.log(data.reason);
+
+                // 首先拿到结果的状态码和结果
+                var result_div = $(".container .part2 .result");
+
+                result_div.empty(); /*清空上一次的结果*/
+
+                var _status = data.status;
+                var _reason = data.reason;
+
+                var reason_lable = $("<p>", {
+                    text: _reason
+                });
+
+                reason_lable.appendTo(result_div);
+
+                if (status == 0) {
+                    // 请求成功，编译没有问题，结果是否正确看测试用例
+                    var _stdout = data.stdout;
+                    var _stderr = data.stderr;
+
+                    var stdout_lable = $("<pre>", {
+                        text: _stdout
+                    })
+
+                    var stderr_lable = $("<pre>", {
+                        text: _stderr
+                    })
+
+                    stdout_lable.appendTo(result_div);
+                    stderr_lable.appendTo(result_div);
+
+                }
+                else {
+
+                }
+            }
         }
 
     </script>

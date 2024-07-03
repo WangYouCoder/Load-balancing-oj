@@ -31,6 +31,7 @@ namespace WY_compile
             }
             else if (pid == 0)
             {
+                umask(0);
                 int Compile_error = open(PathUtil::Compile_error(file_name).c_str(), O_CREAT | O_WRONLY, 0644);
                 if(Compile_error < 0)
                 {
@@ -39,7 +40,7 @@ namespace WY_compile
                 }
                 dup2(Compile_error, 2);
 
-                execlp("g++", "g++", "-o", PathUtil::Exc(file_name).c_str(), "-D", "COMPILE", PathUtil::Src(file_name).c_str(), "-std=c++11", nullptr);
+                execlp("g++", "g++", "-o", PathUtil::Exc(file_name).c_str(), PathUtil::Src(file_name).c_str(), "-D", "COMPILE","-std=c++11", nullptr);
                 LOG(Error) << "execlp程序替换失败,可能是参数错误\n";
                 exit(2);
             }

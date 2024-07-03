@@ -60,7 +60,7 @@ namespace WY_compile_run
             switch (code)
             {
             case 0:
-                dst = "程序编译运行成功";
+                dst = "编译运行成功";
                 break;
             case -1:
                 dst = "代码为空";
@@ -124,6 +124,7 @@ namespace WY_compile_run
             result_code = Runer::Run(file_name, _rlimit_cpu, _rlimit_mem);
             if (result_code == 0)
             {
+                status_code = 0;
                 // 编译运行成功
             }
             else if (result_code < 0)

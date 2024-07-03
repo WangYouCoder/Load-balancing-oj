@@ -1,12 +1,25 @@
 #include <iostream>
+#include <signal.h>
 #include "../comm/httplib.h"
 #include "oj_control.hpp"
 using namespace httplib;
 using namespace WY_control;
+
+static Control *ctrl = nullptr;
+
+void Recovery(int signo)
+{
+    ctrl->RecoveryMachine();
+}
+
 int main()
 {
+    signal(SIGQUIT, Recovery);
+
     Server svr;
     Control cont;
+    ctrl = &cont;
+
     svr.Get("/all_questions",[&cont](const Request &req, Response &resp){
         std::string html;
         cont.AllQuestion(&html);
