@@ -5,6 +5,7 @@
 #include "../comm/log.hpp"
 #include "../comm/util.hpp"
 #include "oj_model.hpp"
+// #include "oj_model2.hpp"
 #include "oj_view.hpp"
 #include <jsoncpp/json/json.h>
 #include <cassert>
@@ -241,7 +242,7 @@ namespace WY_control
             // 3. 将从客户端得到的代码与测试用例进行组合
             Json::Value compile_value;
             compile_value["input"] = in_value["input"].asString();
-            compile_value["code"] = code + q.tail;
+            compile_value["code"] = code + "\n" + q.tail;
             compile_value["cpu_limit"] = q.cpu_limit;
             compile_value["mem_limit"] = q.mem_limit;
             // 4. 进行序列化，转为字符串
