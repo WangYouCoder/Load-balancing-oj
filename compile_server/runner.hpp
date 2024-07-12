@@ -58,7 +58,7 @@ namespace WY_run
                 dup2(_stdout, 1);
                 dup2(_stderr, 2);
 
-                //Runer::Sourcelimit(rlimit_cpu, rlimit_mem);
+                Runer::Sourcelimit(rlimit_cpu, rlimit_mem);
                 execlp(PathUtil::Exc(file_name).c_str(), PathUtil::Exc(file_name).c_str(), nullptr);
                 exit(1);
             }

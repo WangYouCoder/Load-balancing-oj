@@ -4,8 +4,8 @@
 #include <string>
 #include "../comm/log.hpp"
 #include "../comm/util.hpp"
-#include "oj_model.hpp"
-// #include "oj_model2.hpp"
+// #include "oj_model.hpp"
+#include "oj_model2.hpp"
 #include <ctemplate/template.h>
 namespace WY_view
 {

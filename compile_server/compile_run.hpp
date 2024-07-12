@@ -136,6 +136,7 @@ namespace WY_compile_run
             {
                 // 信号量
                 status_code = result_code;
+                std::cout << " 信号量为6, 出现了内存超出范围" << std::endl;
             }
         END:
             out_value["status"] = status_code;
